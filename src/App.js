@@ -1,13 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 
 function App() {
   const [techs, setTech] = useState(['ReactJS', 'React Native']);
   const [newTech, setNewTech] = useState('');
 
-  function handleAdd() {
+  const handleAdd = useCallback(() => {
     setTech([...techs, newTech]);
     setNewTech('');
-  }
+  }, [newTech, techs]);
+
+  useEffect(() => {
+    const storageTech = localStorage.getItem('tech');
+
+    if (storageTech) {
+      setTech(JSON.parse(storageTech));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('tech', JSON.stringify(techs));
+  }, [techs]);
+
+  const techSize = useMemo(() => techs.length, [techs]);
 
   return (
     <>
@@ -16,6 +30,8 @@ function App() {
           <li key={tech}>{tech}</li>
         ))}
       </ul>
+      <strong>Vc tem {techSize} techs:</strong>
+      <br />
       <input
         type="text"
         value={newTech}
